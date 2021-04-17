@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { observer } from "mobx-react";
 
 import { IFlavour } from "../../../core/entities";
-import { IOrder } from "../models/entities";
+import { IOrder } from "../entities/order";
 
 interface IOrderProps {
 	order: IOrder;

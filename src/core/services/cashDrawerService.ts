@@ -1,11 +1,10 @@
 import { action, observable } from "mobx";
-import { IResponse } from "../entities";
 
 export interface ICashDrawerService {
 	isOpen: boolean;
 
 	open: () => Promise<void>;
-	pushMoneyToDrawer: (money: number) => Promise<IResponse<boolean | null>>;
+	pushMoneyToDrawer: (money: number) => Promise<boolean>;
 	close: () => Promise<void>;
 }
 
@@ -19,18 +18,22 @@ export class CashDrawerService implements ICashDrawerService {
 	}
 
 	@action
-	public async pushMoneyToDrawer(
-		money: number
-	): Promise<IResponse<boolean | null>> {
-		if (this.isOpen) {
-			this._drawer += money;
-			return { success: true, data: true, error: "" };
+	public async pushMoneyToDrawer(money: number): Promise<boolean> {
+		if (!this.isOpen) {
+			this.isOpen = true;
 		}
-		return { success: false, data: null, error: "darwer is closed" };
+
+		this._drawer += money;
+		await this.delay(1000);
+		return true;
 	}
 
 	@action
 	public async close(): Promise<void> {
 		this.isOpen = false;
+	}
+
+	private delay(ms: number) {
+		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 }

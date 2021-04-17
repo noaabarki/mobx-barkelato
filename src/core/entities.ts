@@ -7,9 +7,3 @@ export interface IFlavour {
 	price: number;
 	amount: number;
 }
-
-export interface IResponse<T> {
-	success: boolean;
-	data: T;
-	error: string;
-}

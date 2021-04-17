@@ -1,11 +1,16 @@
 import { action, computed, observable } from "mobx";
-import { IFlavour, IResponse } from "../../../core/entities";
+import { IFlavour } from "../../../core/entities";
+import { InvalidServingTypeResponse, IResponse } from "../dtos/responses";
 
 export interface IOrder {
 	completed: boolean;
 	flavours: IFlavour[];
 	type: ServingType;
 	price: number;
+
+	addFlavour: (flavour: IFlavour) => void;
+	setType: (type: string) => IResponse<boolean>;
+	completeOrder: () => void;
 }
 
 export enum ServingType {
@@ -40,15 +45,27 @@ export class Order implements IOrder {
 
 	@action
 	public setType = (type: string): IResponse<boolean> => {
-		if (type === ServingType.cone || type === ServingType.bowl) {
-			this.type = type;
-			return { success: true, data: true, error: "" };
+		const servingType = this.getServingType(type);
+		if (servingType) {
+			this.type = servingType;
+			return { success: true };
 		}
 
-		return {
-			success: false,
-			data: true,
-			error: "invalid type: must be bowl or cone",
-		};
+		return new InvalidServingTypeResponse();
 	};
+
+	@action
+	public addFlavour = (flavour: IFlavour): void => {
+		this.flavours.push(flavour);
+	};
+
+	private getServingType(type: string): ServingType | null {
+		if (type === ServingType.cone) {
+			return ServingType.cone;
+		} else if (type === ServingType.bowl) {
+			return ServingType.bowl;
+		}
+
+		return null;
+	}
 }
