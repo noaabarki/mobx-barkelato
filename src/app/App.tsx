@@ -11,6 +11,11 @@ const Body = styled.div`
 	height: 100vh;
 `;
 
+const Body = styled.div`
+	font-family: sans-serif;
+	height: 100vh;
+`;
+
 export const App = observer(({ store }: { store: IAppStore }) => {
 	const shopViewModel = new ShopStore();
 	return (
