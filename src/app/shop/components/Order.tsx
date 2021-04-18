@@ -5,11 +5,11 @@ import { observer } from "mobx-react";
 import { IFlavour } from "../../../core/entities";
 import { IOrder } from "../entities/order";
 
-interface IOrderProps {
+interface IShoppingCartProps {
 	order: IOrder;
 }
 
-export const Order = observer((props: IOrderProps) => {
+export const Order = observer((props: IShoppingCartProps) => {
 	return (
 		<OrderLayout>
 			<span>{props.order.type}</span>

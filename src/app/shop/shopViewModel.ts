@@ -12,25 +12,28 @@ import {
 	SelectFlavourRequiresOrderResponse,
 	SuccesfulPaymentResponse,
 } from "./dtos/responses";
-import { IOrder, Order } from "./entities/order";
+import { Order } from "./entities/order";
+import { IShoppingCart } from "./entities/shoppingCart";
 
 export interface IShopViewModel {
 	flavours: IFlavour[] | undefined;
-	currentOrder: IOrder | undefined;
+	cart: IShoppingCart;
 
-	initNewOrder: () => void;
+	createNewOrder: () => void;
+	cancelOrder: () => void;
 	onSelectFlavour: (flavour: IFlavour) => void;
 	payOrder: (payment: number) => Promise<IResponse<number>>;
 }
 
 export class ShopViewModel implements ShopViewModel {
 	@observable private _flavours: IFlavour[] | undefined;
-	@observable currentOrder: IOrder | undefined;
+	@observable cart: IShoppingCart;
 
 	constructor(
 		private client: IFlavoursClient,
 		private drawerService: ICashDrawerService
 	) {
+		this.cart = { activeOrder: undefined };
 		this.loadAllFlavours();
 	}
 
@@ -41,13 +44,16 @@ export class ShopViewModel implements ShopViewModel {
 
 	@computed
 	get enableSelectFlavours(): boolean {
-		return !!this.currentOrder && !this.currentOrder.completed;
+		return !!this.cart.activeOrder && !this.cart.activeOrder.completed;
 	}
 
 	@action.bound
 	public onSelectFlavour(flavour: IFlavour): IResponse<null> {
-		if (!this.currentOrder || !this.enableSelectFlavours) {
-			return new SelectFlavourRequiresOrderResponse();
+		if (!this.cart.activeOrder || !this.enableSelectFlavours) {
+			const order = new Order();
+			this.cart.activeOrder = order;
+			this.cart.activeOrder.addFlavour(flavour);
+			// return new SelectFlavourRequiresOrderResponse();
 		}
 
 		if (!this._flavours || !this.flavours || this.flavours.length === 0) {
@@ -59,29 +65,38 @@ export class ShopViewModel implements ShopViewModel {
 			return new FlavourDoesNotExistsResponse();
 		}
 
-		this.currentOrder.addFlavour(flavour);
+		this.cart.activeOrder.addFlavour(flavour);
 		this._flavours[flavourIndex].amount--;
 
 		return { success: true };
 	}
 
 	@action.bound
-	public initNewOrder(): void {
-		this.currentOrder = new Order();
+	public createNewOrder(): void {
+		const order = new Order();
+		this.cart.activeOrder = order;
 	}
 
-	@action
-	public payOrder = async (payment: number): Promise<IResponse<number>> => {
-		if (this.currentOrder) {
-			if (payment < this.currentOrder.price) {
+	@action.bound
+	public async payOrder(payment: number): Promise<IResponse<number>> {
+		if (this.cart.activeOrder) {
+			if (payment < this.cart.activeOrder.price) {
 				return new IncorrectPaymentAmountResponse(payment);
 			}
 
-			return await this.pushPaymentToDrawer(payment, this.currentOrder.price);
+			return await this.pushPaymentToDrawer(
+				payment,
+				this.cart.activeOrder.price
+			);
 		}
 
 		return new OrderDoesNotExistsResponse();
-	};
+	}
+
+	@action.bound
+	public cancelOrder() {
+		this.cart.activeOrder = undefined;
+	}
 
 	@action
 	private loadAllFlavours = async () => {

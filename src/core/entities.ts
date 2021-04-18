@@ -3,7 +3,8 @@ type AllergyLabels = "peanuts" | "gluten";
 export interface IFlavour {
 	id: string;
 	name: string;
-	allrgyLabels: AllergyLabels[];
+	allergyLabels: AllergyLabels[];
 	price: number;
 	amount: number;
+	imageURI: string;
 }
