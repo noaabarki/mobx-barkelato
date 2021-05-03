@@ -34,8 +34,13 @@ export class ShopStore {
 		const flavour =
 			this._flavours && this._flavours.find((f) => f.name === flavourName);
 		if (flavour) {
+			const existingOrderInCart = this.cart.orders.find(
+				(o) => o.item.name === flavour.name
+			);
+			if (existingOrderInCart) {
+				flavour.amountLeft++;
+			}
 			this.cart.removeOrder(flavour.name);
-			flavour.amountLeft++;
 		}
 	}
 
@@ -52,7 +57,7 @@ export class ShopStore {
 			new Flavour({
 				name: "cream",
 				price: 8,
-				amount: 10,
+				amount: 2,
 			}),
 			new Flavour({
 				name: "sunday",

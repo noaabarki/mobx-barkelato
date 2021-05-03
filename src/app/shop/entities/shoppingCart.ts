@@ -45,7 +45,7 @@ export class ShoppingCart {
 	@action.bound
 	public addOrder(item: string, price: number) {
 		const existingOrderIndex = this.findOrderIndex(item);
-		if (existingOrderIndex > 0) {
+		if (existingOrderIndex >= 0) {
 			this._orders[existingOrderIndex].addItem();
 		} else {
 			const order = this.createOrder(item, price);
@@ -56,7 +56,7 @@ export class ShoppingCart {
 	@action.bound
 	public removeOrder(item: string) {
 		const existingOrderIndex = this.findOrderIndex(item);
-		if (existingOrderIndex > 0) {
+		if (existingOrderIndex >= 0) {
 			const existingOrder = this.orders[existingOrderIndex];
 			if (existingOrder.item.amount > 1) {
 				existingOrder.removeItem();
