@@ -1,71 +1,44 @@
-import { action, computed, observable } from "mobx";
-import { IFlavour } from "../../../core/entities";
-import { InvalidServingTypeResponse, IResponse } from "../dtos/responses";
+import { observable, computed, action } from "mobx"
+import { IOrderItem } from "../interfaces/order.interfaces"
 
 export interface IOrder {
-	completed: boolean;
-	flavours: IFlavour[];
-	type: ServingType;
-	price: number;
+  id: number
+  item: IOrderItem
+  totalPrice: number
 
-	addFlavour: (flavour: IFlavour) => void;
-	setType: (type: string) => IResponse<boolean>;
-	completeOrder: () => void;
-}
-
-export enum ServingType {
-	bowl = "bowl",
-	cone = "cone",
+  addItem: () => void
+  removeItem: () => void
 }
 
 export class Order implements IOrder {
-	@observable public completed: boolean;
-	@observable public flavours: IFlavour[];
-	@observable type: ServingType;
+  public id: number
 
-	constructor() {
-		this.completed = false;
-		this.flavours = [];
-		this.type = ServingType.cone;
-	}
+  @observable item: IOrderItem
+  constructor(id: number, name: string, price: number) {
+    this.id = id
+    this.item = this.createItem(name, price)
+  }
 
-	@computed
-	public get price(): number {
-		return this.flavours
-			? this.flavours.reduce((prev, curr) => {
-					return prev + curr.price;
-			  }, 0)
-			: 0;
-	}
+  @computed
+  get totalPrice() {
+    return this.item.price * this.item.amount
+  }
 
-	@action
-	public completeOrder = () => {
-		this.completed = true;
-	};
+  @action.bound
+  public addItem() {
+    this.item.amount++
+  }
 
-	@action
-	public setType = (type: string): IResponse<boolean> => {
-		const servingType = this.getServingType(type);
-		if (servingType) {
-			this.type = servingType;
-			return { success: true };
-		}
+  @action.bound
+  public removeItem() {
+    this.item.amount--
+  }
 
-		return new InvalidServingTypeResponse();
-	};
-
-	@action
-	public addFlavour = (flavour: IFlavour): void => {
-		this.flavours.push(flavour);
-	};
-
-	private getServingType(type: string): ServingType | null {
-		if (type === ServingType.cone) {
-			return ServingType.cone;
-		} else if (type === ServingType.bowl) {
-			return ServingType.bowl;
-		}
-
-		return null;
-	}
+  private createItem = (name: string, price: number) => {
+    return {
+      name,
+      price,
+      amount: 1,
+    }
+  }
 }

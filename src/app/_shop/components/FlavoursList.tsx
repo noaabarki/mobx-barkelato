@@ -56,8 +56,6 @@ const FlavourCard = styled.div`
 	align-items: center;
 `;
 
-const Badge = styled.span``;
-
 const Image = styled.img`
 	max-width: 70px;
 	max-height: 70px;

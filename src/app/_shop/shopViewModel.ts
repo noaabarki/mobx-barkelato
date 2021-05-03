@@ -9,7 +9,6 @@ import {
 	IResponse,
 	OrderDoesNotExistsResponse,
 	RanOutOfFlavoursResponse,
-	SelectFlavourRequiresOrderResponse,
 	SuccesfulPaymentResponse,
 } from "./dtos/responses";
 import { Order } from "./entities/order";

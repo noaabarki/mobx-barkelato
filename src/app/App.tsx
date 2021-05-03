@@ -3,8 +3,8 @@ import React from "react";
 import styled from "styled-components";
 
 import { IAppStore } from "../app";
+import { ShopStore } from "./shop/shopStore";
 import { Shop } from "./shop/Shop";
-import { ShopViewModel } from "./shop/shopViewModel";
 
 const Body = styled.div`
 	font-family: sans-serif;
@@ -12,13 +12,10 @@ const Body = styled.div`
 `;
 
 export const App = observer(({ store }: { store: IAppStore }) => {
-	const shopViewModel = new ShopViewModel(
-		store.gatewayClient,
-		store.drawerService
-	);
+	const shopViewModel = new ShopStore();
 	return (
 		<Body>
-			<Shop viewModel={shopViewModel} />
+			<Shop store={shopViewModel} />
 		</Body>
 	);
 });
