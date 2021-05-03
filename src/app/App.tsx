@@ -6,10 +6,6 @@ import { IAppStore } from "../app";
 import { ShopStore } from "./shop/shopStore";
 import { Shop } from "./shop/Shop";
 
-const Body = styled.div`
-	font-family: sans-serif;
-	height: 100vh;
-`;
 
 const Body = styled.div`
 	font-family: sans-serif;
