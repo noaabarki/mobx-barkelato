@@ -9,20 +9,19 @@ import { IOrder } from "./entities/order";
 import React from "react";
 
 export const Shop = observer((props: { store: ShopStore }) => {
-	if (props.store.flavours) {
-		return (
-			<ShopLayout>
-				<ShoppingCart cart={props.store.cart} />
+	return (
+		<ShopLayout>
+			<ShoppingCart cart={props.store.cart} />
+			{props.store.flavours && (
 				<Flavours
 					flavours={props.store.flavours}
 					onAddClick={(f) => props.store.onAddFlavour(f.name)}
 					onRemoveClick={(f) => props.store.onRemoveFlavour(f.name)}
 				/>
-			</ShopLayout>
-		);
-	} else {
-		return <span>loading...</span>;
-	}
+			)}
+			{!props.store.flavours && <span>loading...</span>}
+		</ShopLayout>
+	);
 });
 
 const ShopLayout = styled.div`

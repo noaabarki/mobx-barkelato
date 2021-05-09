@@ -14,42 +14,36 @@ export interface IShoppingCart {
 }
 
 export class ShoppingCart {
-	@observable private _orders: IOrder[];
+	@observable orders: IOrder[];
 	@observable totalPaid: number;
 
 	constructor() {
-		this._orders = [];
+		this.orders = [];
 		this.totalPaid = 0;
 	}
 
 	@computed
-	get orders() {
-		return this._orders;
-	}
-
-	@computed
 	get totalItems() {
-		return this._orders.reduce((accu, curr) => {
-			return accu + curr.item.amount;
-		}, 0);
+		return this.calcTotalOrdersItems(this.orders);
 	}
 
 	@computed
 	get totalPrice() {
-		const ordersTotalPrice = this._orders.reduce((accu, curr) => {
-			return accu + curr.totalPrice;
-		}, 0);
-		return ordersTotalPrice - this.totalPaid;
+		return this.calcTotalOrdersPrice(this.orders) - this.totalPaid;
+	}
+
+	@action.bound
+	public pay(paymnet: number) {
+		this.totalPaid += paymnet;
 	}
 
 	@action.bound
 	public addOrder(item: string, price: number) {
 		const existingOrderIndex = this.findOrderIndex(item);
 		if (existingOrderIndex >= 0) {
-			this._orders[existingOrderIndex].addItem();
+			this.orders[existingOrderIndex].addItem();
 		} else {
-			const order = this.createOrder(item, price);
-			this._orders = [...this._orders, order]; //.push(this.createOrder(item, price));
+			this.orders.push(this.createOrder(item, price));
 		}
 	}
 
@@ -66,11 +60,6 @@ export class ShoppingCart {
 		}
 	}
 
-	@action.bound
-	public pay(paymnet: number) {
-		this.totalPaid += paymnet;
-	}
-
 	private generateOrderId = () => {
 		return this.orders.length + 1;
 	};
@@ -81,5 +70,18 @@ export class ShoppingCart {
 
 	private createOrder = (item: string, price: number) => {
 		return new Order(this.generateOrderId(), item, price);
+	};
+
+	private calcTotalOrdersItems = (orders: IOrder[]) => {
+		return orders.reduce((accu, curr) => {
+			return accu + curr.item.amount;
+		}, 0);
+	};
+
+	private calcTotalOrdersPrice = (orders: IOrder[]) => {
+		const ordersTotalPrice = orders.reduce((accu, curr) => {
+			return accu + curr.totalPrice;
+		}, 0);
+		return ordersTotalPrice;
 	};
 }

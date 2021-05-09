@@ -1,14 +1,12 @@
 import { observable, computed } from "mobx";
 
+type CreateFlavourArgs = { name: string; price: number; amount?: number };
 export interface IFlavour {
 	name: string;
 	amountLeft: number;
 	price: number;
 	enabled: boolean;
 }
-
-type CreateFlavourArgs = { name: string; price: number; amount?: number };
-
 export class Flavour implements IFlavour {
 	name: string;
 	price: number;
