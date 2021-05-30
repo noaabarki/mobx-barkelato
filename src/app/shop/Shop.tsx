@@ -15,8 +15,8 @@ export const Shop = observer((props: { store: ShopStore }) => {
 			{props.store.flavours && (
 				<Flavours
 					flavours={props.store.flavours}
-					onAddClick={(f) => props.store.onAddFlavour(f.name)}
-					onRemoveClick={(f) => props.store.onRemoveFlavour(f.name)}
+					onAddClick={(f) => props.store.addFlavour(f.name)}
+					onRemoveClick={(f) => props.store.removeFlavour(f.name)}
 				/>
 			)}
 			{!props.store.flavours && <span>loading...</span>}

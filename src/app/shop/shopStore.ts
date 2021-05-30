@@ -1,11 +1,10 @@
-import { observable, computed, action } from "mobx";
+import { observable, computed, action, autorun } from "mobx";
 import { Flavour, IFlavour } from "./entities/flavour";
 import { IShoppingCart, ShoppingCart } from "./entities/shoppingCart";
 
 export class ShopStore {
 	cart: IShoppingCart;
 	@observable private _flavours: IFlavour[] | undefined;
-
 	constructor() {
 		this.cart = new ShoppingCart();
 		this.getFlavours();
@@ -21,7 +20,7 @@ export class ShopStore {
 		return this.cart.totalPrice > 0;
 	}
 
-	public onAddFlavour(flavourName: string) {
+	public addFlavour(flavourName: string) {
 		const flavour =
 			this._flavours && this._flavours.find((f) => f.name === flavourName);
 		if (flavour) {
@@ -30,7 +29,7 @@ export class ShopStore {
 		}
 	}
 
-	public onRemoveFlavour(flavourName: string) {
+	public removeFlavour(flavourName: string) {
 		const flavour =
 			this._flavours && this._flavours.find((f) => f.name === flavourName);
 		if (flavour) {
