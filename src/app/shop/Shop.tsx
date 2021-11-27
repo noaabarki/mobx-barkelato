@@ -11,7 +11,7 @@ import React from "react";
 export const Shop = observer((props: { store: ShopStore }) => {
 	return (
 		<ShopLayout>
-			<ShoppingCart cart={props.store.cart} />
+			{/* <ShoppingCart cart={props.store.cart} /> */}
 			{props.store.flavours && (
 				<Flavours
 					flavours={props.store.flavours}
@@ -42,6 +42,7 @@ const Flavours = observer(
 			<FlavoursLayout>
 				{props.flavours.map((f, index) => (
 					<FlavourCard
+						key={index}
 						index={index}
 						flavour={f}
 						onAddClick={() => props.onAddClick(f)}
@@ -53,6 +54,34 @@ const Flavours = observer(
 	}
 );
 
+const FlavourCard = observer(
+	(props: {
+		index: number;
+		flavour: IFlavour;
+		onAddClick: () => void;
+		onRemoveClick: () => void;
+	}) => {
+		return (
+			<FlavourCardLayout enabled={props.flavour.enabled}>
+				<AmountCounter>
+					<span>{props.flavour.amountLeft}</span>
+				</AmountCounter>
+				<span>{props.flavour.name}</span>
+				<FlavorImage
+					alt={""}
+					src={require(`./assets/images/${props.index}.jpeg`)}
+				/>
+				<FlavorCardActions>
+					<button onClick={props.onAddClick} disabled={!props.flavour.enabled}>
+						+
+					</button>
+					<span>{props.flavour.price}$</span>
+					<button onClick={props.onRemoveClick}>-</button>
+				</FlavorCardActions>
+			</FlavourCardLayout>
+		);
+	}
+);
 const FlavoursLayout = styled.div`
 	display: grid;
 	grid-template-columns: repeat(4, 10rem);
@@ -63,31 +92,10 @@ const FlavoursLayout = styled.div`
 	text-align: center;
 `;
 
-const FlavourCard = observer(
-	(props: {
-		index: number;
-		flavour: IFlavour;
-		onAddClick: () => void;
-		onRemoveClick: () => void;
-	}) => {
-		return (
-			<FlavourCardLayout enabled={props.flavour.enabled}>
-				<div className="stock-counter">
-					<span>{props.flavour.amountLeft}</span>
-				</div>
-				<span>{props.flavour.name}</span>
-				<img alt={""} src={require(`./assets/images/${props.index}.jpeg`)} />
-				<div className="buttons">
-					<button onClick={props.onAddClick} disabled={!props.flavour.enabled}>
-						+
-					</button>
-					<span>{props.flavour.price}$</span>
-					<button onClick={props.onRemoveClick}>-</button>
-				</div>
-			</FlavourCardLayout>
-		);
-	}
-);
+const FlavorImage = styled.img`
+	max-width: 80px;
+	max-height: 80px;
+`;
 
 const FlavourCardLayout = styled.div<{ enabled: boolean }>`
 	border: 1px solid;
@@ -98,31 +106,29 @@ const FlavourCardLayout = styled.div<{ enabled: boolean }>`
 	padding: 0 1rem;
 	position: relative;
 
-	.stock-counter {
-		color: white;
-		border-radius: 50%;
-		width: 1.5rem;
-		height: 1.5rem;
-		line-height: 1.5rem;
-		position: absolute;
-		top: 0.2rem;
-		right: 0.2rem;
-		border: 1px solid;
-		background: black;
-		font-size: 12px;
-	}
-
-	img {
-		max-width: 80px;
-		max-height: 80px;
+	${FlavorImage} {
 		opacity: ${(props) => (props.enabled ? 1 : 0.5)};
 	}
+`;
 
-	.buttons {
-		width: 100%;
-		display: flex;
-		justify-content: space-around;
-	}
+const FlavorCardActions = styled.div`
+	width: 100%;
+	display: flex;
+	justify-content: space-around;
+`;
+
+const AmountCounter = styled.div`
+	color: white;
+	border-radius: 50%;
+	width: 1.5rem;
+	height: 1.5rem;
+	line-height: 1.5rem;
+	position: absolute;
+	top: 0.2rem;
+	right: 0.2rem;
+	border: 1px solid;
+	background: black;
+	font-size: 12px;
 `;
 
 interface IShoppingCartProps {

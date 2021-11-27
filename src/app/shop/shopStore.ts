@@ -1,17 +1,21 @@
-import { observable, computed, action, autorun } from "mobx";
+import { computed, observable, runInAction } from "mobx";
 import { Flavour, IFlavour } from "./entities/flavour";
 import { IShoppingCart, ShoppingCart } from "./entities/shoppingCart";
 
 export class ShopStore {
 	cart: IShoppingCart;
+
 	@observable private _flavours: IFlavour[] | undefined;
 	constructor() {
 		this.cart = new ShoppingCart();
-		this.getFlavours();
 	}
 
 	@computed
 	get flavours() {
+		if (!this._flavours) {
+			this.getFlavours();
+		}
+
 		return this._flavours;
 	}
 
@@ -49,10 +53,16 @@ export class ShopStore {
 		}
 	}
 
-	@action.bound
-	private async getFlavours(): Promise<void> {
+	private getFlavours = async (): Promise<void> => {
+		const flavours = await this.fetchFlavours();
+		runInAction(() => {
+			this._flavours = flavours;
+		})
+	}
+
+	private fetchFlavours = async (): Promise<Flavour[]> => {
 		await this.delay(2000);
-		this._flavours = [
+		return [
 			new Flavour({
 				name: "cream",
 				price: 8,
@@ -75,6 +85,7 @@ export class ShopStore {
 			}),
 		];
 	}
+
 
 	private delay(ms: number) {
 		return new Promise((resolve) => setTimeout(resolve, ms));
