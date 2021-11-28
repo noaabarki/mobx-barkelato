@@ -22,6 +22,27 @@ export class ShoppingCart {
 		this.totalPaid = 0;
 	}
 
+	@action.bound
+	public addOrder(item: string, price: number) {
+		const existingRecord = this.findOrder(item);
+		if (existingRecord) {
+			existingRecord.order.addItem();
+		} else {
+			this.orders.push(this.createOrder(item, price));
+		}
+	}
+
+	@action.bound
+	public removeOrder(item: string) {
+		const existingRecord = this.findOrder(item);
+		if (existingRecord) {
+			existingRecord.order.removeItem();
+			if (existingRecord.order.totalItems === 0) {
+				this.orders.splice(this.orders.indexOf(existingRecord.order), 1);
+			}
+		}
+	}
+
 	@computed
 	get totalItems() {
 		return this.calcTotalOrdersItems(this.orders);
@@ -37,36 +58,19 @@ export class ShoppingCart {
 		this.totalPaid += paymnet;
 	}
 
-	@action.bound
-	public addOrder(item: string, price: number) {
-		const existingOrderIndex = this.findOrderIndex(item);
-		if (existingOrderIndex >= 0) {
-			this.orders[existingOrderIndex].addItem();
-		} else {
-			this.orders.push(this.createOrder(item, price));
-		}
-	}
 
-	@action.bound
-	public removeOrder(item: string) {
-		const existingOrderIndex = this.findOrderIndex(item);
-		if (existingOrderIndex >= 0) {
-			const existingOrder = this.orders[existingOrderIndex];
-			if (existingOrder.item.amount > 1) {
-				existingOrder.removeItem();
-			} else {
-				this.orders.splice(existingOrderIndex, 1);
-			}
-		}
-	}
 
 	private generateOrderId = () => {
 		return this.orders.length + 1;
 	};
 
-	private findOrderIndex = (item: string) => {
-		return this.orders.findIndex((o) => o.item.name === item);
-	};
+	private findOrder = (item: string): { index: number, order: IOrder } | undefined => {
+		const existingOrderIndex = this.orders.findIndex((o) => o.item.name === item);
+		if (existingOrderIndex >= 0) {
+			return { index: existingOrderIndex, order: this.orders[existingOrderIndex] };
+		}
+	}
+
 
 	private createOrder = (item: string, price: number) => {
 		return new Order(this.generateOrderId(), item, price);

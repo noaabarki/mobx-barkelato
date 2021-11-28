@@ -5,6 +5,7 @@ export interface IOrder {
   id: number
   item: IOrderItem
   totalPrice: number
+  totalItems: number
 
   addItem: () => void
   removeItem: () => void
@@ -12,8 +13,8 @@ export interface IOrder {
 
 export class Order implements IOrder {
   public id: number
-
   @observable item: IOrderItem
+
   constructor(id: number, name: string, price: number) {
     this.id = id
     this.item = this.createItem(name, price)
@@ -22,6 +23,11 @@ export class Order implements IOrder {
   @computed
   get totalPrice() {
     return this.item.price * this.item.amount
+  }
+
+  @computed
+  get totalItems() {
+    return this.item.amount
   }
 
   @action.bound
