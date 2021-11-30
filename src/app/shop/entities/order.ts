@@ -11,18 +11,19 @@ export interface IOrder {
   removeItem: () => void
 }
 
+type NewOrderItemArgs = Pick<IOrderItem, 'name' | 'price'>
 export class Order implements IOrder {
   public id: number
   @observable item: IOrderItem
 
-  constructor(id: number, name: string, price: number) {
+  constructor(id: number, item: NewOrderItemArgs) {
     this.id = id
-    this.item = this.createItem(name, price)
+    this.item = this.createNewItem(item)
   }
 
   @computed
   get totalPrice() {
-    return this.item.price * this.item.amount
+    return this.item.price * (this.item.amount || 1)
   }
 
   @computed
@@ -40,11 +41,13 @@ export class Order implements IOrder {
     this.item.amount--
   }
 
-  private createItem = (name: string, price: number) => {
+  private createNewItem = ({ name, price }: NewOrderItemArgs) => {
     return {
       name,
       price,
       amount: 1,
     }
   }
+
+
 }

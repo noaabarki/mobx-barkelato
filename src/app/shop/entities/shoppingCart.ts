@@ -8,49 +8,36 @@ export interface IShoppingCart {
 	totalPrice: number;
 	totalPaid: number;
 
-	addOrder: (item: string, price: number) => void;
-	removeOrder: (item: string) => void;
+	addItem: (item: { name: string, price: number }) => void;
+	removeItem: (itemName: string) => void;
 	pay: (paymnet: number) => void;
 }
 
-export class ShoppingCart {
-	@observable orders: IOrder[];
-	@observable totalPaid: number;
+export interface IOrderRecord { index: number, order: IOrder }
 
-	constructor() {
-		this.orders = [];
-		this.totalPaid = 0;
-	}
+export class ShoppingCart {
+	@observable orders: IOrder[] = [];
+	@observable totalPaid: number = 0
 
 	@action.bound
-	public addOrder(item: string, price: number) {
-		const existingRecord = this.findOrder(item);
-		if (existingRecord) {
-			existingRecord.order.addItem();
+	public addItem(item: { name: string, price: number }) {
+		const existingOrder = this.orders.find((o) => o.item.name === item.name);
+		if (existingOrder) {
+			existingOrder.addItem();
 		} else {
-			this.orders.push(this.createOrder(item, price));
+			this.orders.push(new Order(this.getNextOrderId(), item));
 		}
 	}
 
 	@action.bound
-	public removeOrder(item: string) {
-		const existingRecord = this.findOrder(item);
-		if (existingRecord) {
-			existingRecord.order.removeItem();
-			if (existingRecord.order.totalItems === 0) {
-				this.orders.splice(this.orders.indexOf(existingRecord.order), 1);
+	public removeItem(itemName: string) {
+		const existingOrder = this.orders.find((o) => o.item.name === itemName);
+		if (existingOrder) {
+			existingOrder.removeItem();
+			if (existingOrder.totalItems === 0) {
+				this.removeOrder(existingOrder);
 			}
 		}
-	}
-
-	@computed
-	get totalItems() {
-		return this.calcTotalOrdersItems(this.orders);
-	}
-
-	@computed
-	get totalPrice() {
-		return this.calcTotalOrdersPrice(this.orders) - this.totalPaid;
 	}
 
 	@action.bound
@@ -58,28 +45,25 @@ export class ShoppingCart {
 		this.totalPaid += paymnet;
 	}
 
-
-
-	private generateOrderId = () => {
-		return this.orders.length + 1;
-	};
-
-	private findOrder = (item: string): { index: number, order: IOrder } | undefined => {
-		const existingOrderIndex = this.orders.findIndex((o) => o.item.name === item);
-		if (existingOrderIndex >= 0) {
-			return { index: existingOrderIndex, order: this.orders[existingOrderIndex] };
-		}
+	@computed
+	get totalPrice() {
+		return this.calcTotalOrdersPrice(this.orders) - this.totalPaid;
 	}
 
 
-	private createOrder = (item: string, price: number) => {
-		return new Order(this.generateOrderId(), item, price);
-	};
+	@computed
+	get totalItems() {
+		return this.calcTotalOrdersItems(this.orders);
+	}
 
 	private calcTotalOrdersItems = (orders: IOrder[]) => {
 		return orders.reduce((accu, curr) => {
 			return accu + curr.item.amount;
 		}, 0);
+	};
+
+	private getNextOrderId = () => {
+		return this.orders.length + 1;
 	};
 
 	private calcTotalOrdersPrice = (orders: IOrder[]) => {
@@ -88,4 +72,8 @@ export class ShoppingCart {
 		}, 0);
 		return ordersTotalPrice;
 	};
+
+	private removeOrder = (order: IOrder) => {
+		this.orders.splice(this.orders.indexOf(order), 1);
+	}
 }

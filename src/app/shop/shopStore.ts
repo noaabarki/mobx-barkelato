@@ -3,57 +3,52 @@ import { Flavour, IFlavour } from "./entities/flavour";
 import { IShoppingCart, ShoppingCart } from "./entities/shoppingCart";
 
 export class ShopStore {
-	cart: IShoppingCart;
-
+	shoppingCart: IShoppingCart;
 	@observable private _flavours: IFlavour[] | undefined;
+
 	constructor() {
-		this.cart = new ShoppingCart();
+		this.shoppingCart = new ShoppingCart();
+		this.loadFlavours();
 	}
 
 	@computed
 	get flavours() {
 		if (!this._flavours) {
-			this.getFlavours();
+			this.loadFlavours();
 		}
 
 		return this._flavours;
 	}
 
-	@computed
-	get enablePay() {
-		return this.cart.totalPrice > 0;
+
+	public addFlavourToShoppingCart(flavourName: string) {
+		const flavour = this._flavours?.find((f) => f.name === flavourName);
+		if (flavour) {
+			this.shoppingCart.addItem({ ...flavour });
+			flavour.amountLeft++;
+		}
 	}
 
-	public addFlavour(flavourName: string) {
-		const flavour =
-			this._flavours && this._flavours.find((f) => f.name === flavourName);
+	public removeFlavourFromShoppingCart(flavourName: string) {
+		const flavour = this._flavours?.find((f) => f.name === flavourName);
 		if (flavour) {
-			this.cart.addOrder(flavour.name, flavour.price);
+			this.shoppingCart.removeItem(flavourName);
 			flavour.amountLeft--;
 		}
 	}
 
-	public removeFlavour(flavourName: string) {
-		const flavour =
-			this._flavours && this._flavours.find((f) => f.name === flavourName);
-		if (flavour) {
-			const existingOrderInCart = this.cart.orders.find(
-				(o) => o.item.name === flavour.name
-			);
-			if (existingOrderInCart) {
-				flavour.amountLeft++;
-			}
-			this.cart.removeOrder(flavour.name);
-		}
+	@computed
+	get enablePay() {
+		return this.shoppingCart.totalPrice > 0;
 	}
 
 	public pay(paymnet: number) {
 		if (this.enablePay) {
-			this.cart.pay(paymnet);
+			this.shoppingCart.pay(paymnet);
 		}
 	}
 
-	private getFlavours = async (): Promise<void> => {
+	private loadFlavours = async (): Promise<void> => {
 		const flavours = await this.fetchFlavours();
 		runInAction(() => {
 			this._flavours = flavours;
@@ -90,4 +85,5 @@ export class ShopStore {
 	private delay(ms: number) {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
+
 }

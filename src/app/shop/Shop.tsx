@@ -1,24 +1,19 @@
+import React from "react";
 import { observer } from "mobx-react";
 import styled from "styled-components";
-import { IFlavour } from "./entities/flavour";
 
 import { ShopStore } from "./shopStore";
 
-import { IShoppingCart } from "./entities/shoppingCart";
-import { IOrder } from "./entities/order";
-import React from "react";
+import { IShoppingCart, IOrder, IFlavour } from "./entities";
 
 export const Shop = observer((props: { store: ShopStore }) => {
 	return (
 		<ShopLayout>
-			{/* <ShoppingCart cart={props.store.cart} /> */}
-			{props.store.flavours && (
-				<Flavours
-					flavours={props.store.flavours}
-					onAddClick={(f) => props.store.addFlavour(f.name)}
-					onRemoveClick={(f) => props.store.removeFlavour(f.name)}
-				/>
-			)}
+			<Flavours
+				flavours={props.store.flavours}
+				onAddClick={(f) => props.store.addFlavourToShoppingCart(f.name)}
+				onRemoveClick={(f) => props.store.removeFlavourFromShoppingCart(f.name)}
+			/>
 			{!props.store.flavours && <span>loading...</span>}
 		</ShopLayout>
 	);
@@ -34,10 +29,14 @@ const ShopLayout = styled.div`
 
 const Flavours = observer(
 	(props: {
-		flavours: IFlavour[];
+		flavours?: IFlavour[];
 		onAddClick: (flavour: IFlavour) => void;
 		onRemoveClick: (flavour: IFlavour) => void;
 	}) => {
+		if (!props.flavours) {
+			return <></>;
+		}
+
 		return (
 			<FlavoursLayout>
 				{props.flavours.map((f, index) => (
@@ -62,7 +61,7 @@ const FlavourCard = observer(
 		onRemoveClick: () => void;
 	}) => {
 		return (
-			<FlavourCardLayout enabled={props.flavour.enabled}>
+			<FlavourCardLayout enabled={!props.flavour.isOutOfStock}>
 				<AmountCounter>
 					<span>{props.flavour.amountLeft}</span>
 				</AmountCounter>
@@ -72,7 +71,10 @@ const FlavourCard = observer(
 					src={require(`./assets/images/${props.index}.jpeg`)}
 				/>
 				<FlavorCardActions>
-					<button onClick={props.onAddClick} disabled={!props.flavour.enabled}>
+					<button
+						onClick={props.onAddClick}
+						disabled={props.flavour.isOutOfStock}
+					>
 						+
 					</button>
 					<span>{props.flavour.price}$</span>

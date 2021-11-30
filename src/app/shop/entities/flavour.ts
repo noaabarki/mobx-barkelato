@@ -5,17 +5,18 @@ export interface IFlavour {
 	name: string;
 	amountLeft: number;
 	price: number;
-	enabled: boolean;
+	isOutOfStock: boolean;
 }
+
 export class Flavour implements IFlavour {
 	name: string;
 	price: number;
-	@observable private _amountLeft: number;
 
+	@observable private _amountLeft: number;
 	constructor(args: CreateFlavourArgs) {
 		this.name = args.name;
 		this.price = args.price;
-		this._amountLeft = args.amount || 100;
+		this._amountLeft = args.amount || 0;;
 	}
 
 	@computed
@@ -27,7 +28,8 @@ export class Flavour implements IFlavour {
 	}
 
 	@computed
-	get enabled() {
-		return this.amountLeft > 0;
+	get isOutOfStock() {
+		return this.amountLeft === 0
 	}
+
 }
