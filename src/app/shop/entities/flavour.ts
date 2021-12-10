@@ -31,5 +31,4 @@ export class Flavour implements IFlavour {
 	get isOutOfStock() {
 		return this.amountLeft === 0
 	}
-
 }

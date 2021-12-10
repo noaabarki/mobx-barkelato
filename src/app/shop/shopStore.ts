@@ -1,17 +1,17 @@
-import { computed, observable, runInAction } from "mobx";
+import * as mobx from "mobx";
 import { Flavour, IFlavour } from "./entities/flavour";
 import { IShoppingCart, ShoppingCart } from "./entities/shoppingCart";
+import delay from "./delay";
 
 export class ShopStore {
 	shoppingCart: IShoppingCart;
-	@observable private _flavours: IFlavour[] | undefined;
+	@mobx.observable private _flavours: IFlavour[] | undefined;
 
 	constructor() {
 		this.shoppingCart = new ShoppingCart();
-		this.loadFlavours();
 	}
 
-	@computed
+	@mobx.computed
 	get flavours() {
 		if (!this._flavours) {
 			this.loadFlavours();
@@ -20,43 +20,31 @@ export class ShopStore {
 		return this._flavours;
 	}
 
-
 	public addFlavourToShoppingCart(flavourName: string) {
 		const flavour = this._flavours?.find((f) => f.name === flavourName);
 		if (flavour) {
 			this.shoppingCart.addItem({ ...flavour });
-			flavour.amountLeft++;
+			flavour.amountLeft--;
 		}
 	}
 
 	public removeFlavourFromShoppingCart(flavourName: string) {
 		const flavour = this._flavours?.find((f) => f.name === flavourName);
-		if (flavour) {
+		if (flavour && this.itemExistsInShoppingCart(flavour.name)) {
 			this.shoppingCart.removeItem(flavourName);
-			flavour.amountLeft--;
+			flavour.amountLeft++;
 		}
 	}
 
-	@computed
-	get enablePay() {
-		return this.shoppingCart.totalPrice > 0;
-	}
-
-	public pay(paymnet: number) {
-		if (this.enablePay) {
-			this.shoppingCart.pay(paymnet);
-		}
-	}
-
-	private loadFlavours = async (): Promise<void> => {
+	private async loadFlavours(): Promise<void> {
 		const flavours = await this.fetchFlavours();
-		runInAction(() => {
+		mobx.runInAction(() => {
 			this._flavours = flavours;
 		})
 	}
 
 	private fetchFlavours = async (): Promise<Flavour[]> => {
-		await this.delay(2000);
+		await delay(2000);
 		return [
 			new Flavour({
 				name: "cream",
@@ -81,9 +69,8 @@ export class ShopStore {
 		];
 	}
 
-
-	private delay(ms: number) {
-		return new Promise((resolve) => setTimeout(resolve, ms));
+	private itemExistsInShoppingCart(itemName: string) {
+		return this.shoppingCart.orders.find((o) => o.item.name === itemName);
 	}
 
 }

@@ -4,9 +4,8 @@ import { IOrder, Order } from "./order";
 
 export interface IShoppingCart {
 	orders: IOrder[];
-	totalItems: number;
-	totalPrice: number;
-	totalPaid: number;
+	total: number;
+	subtotal: number;
 
 	addItem: (item: { name: string, price: number }) => void;
 	removeItem: (itemName: string) => void;
@@ -17,7 +16,7 @@ export interface IOrderRecord { index: number, order: IOrder }
 
 export class ShoppingCart {
 	@observable orders: IOrder[] = [];
-	@observable totalPaid: number = 0
+	@observable private totalPaid: number = 0
 
 	@action.bound
 	public addItem(item: { name: string, price: number }) {
@@ -32,45 +31,40 @@ export class ShoppingCart {
 	@action.bound
 	public removeItem(itemName: string) {
 		const existingOrder = this.orders.find((o) => o.item.name === itemName);
-		if (existingOrder) {
-			existingOrder.removeItem();
-			if (existingOrder.totalItems === 0) {
-				this.removeOrder(existingOrder);
-			}
+		if (!existingOrder)
+			return
+
+		existingOrder.removeItem();
+		if (existingOrder.totalItems === 0) {
+			this.removeOrder(existingOrder);
 		}
 	}
 
 	@action.bound
 	public pay(paymnet: number) {
-		this.totalPaid += paymnet;
+		const isPaymentTooHigh = this.total - paymnet >= 0
+		if (isPaymentTooHigh) {
+			this.totalPaid += paymnet;
+		} else {
+			throw Error('too much money')
+		}
 	}
 
 	@computed
-	get totalPrice() {
-		return this.calcTotalOrdersPrice(this.orders) - this.totalPaid;
-	}
-
-
-	@computed
-	get totalItems() {
-		return this.calcTotalOrdersItems(this.orders);
-	}
-
-	private calcTotalOrdersItems = (orders: IOrder[]) => {
-		return orders.reduce((accu, curr) => {
-			return accu + curr.item.amount;
+	get total() {
+		const ordersTotalPrice = this.orders.reduce((accu, curr) => {
+			return accu + curr.totalPrice;
 		}, 0);
-	};
+		return ordersTotalPrice - this.totalPaid;
+	}
+
+	@computed
+	get subtotal() {
+		return this.total - this.totalPaid
+	}
 
 	private getNextOrderId = () => {
 		return this.orders.length + 1;
-	};
-
-	private calcTotalOrdersPrice = (orders: IOrder[]) => {
-		const ordersTotalPrice = orders.reduce((accu, curr) => {
-			return accu + curr.totalPrice;
-		}, 0);
-		return ordersTotalPrice;
 	};
 
 	private removeOrder = (order: IOrder) => {
