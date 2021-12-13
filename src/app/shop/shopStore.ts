@@ -24,7 +24,7 @@ export class ShopStore {
 
 	public addFlavourToShoppingCart(flavourName: string) {
 		const flavour = this._flavours && this._flavours.find((f) => f.name === flavourName);
-		if (flavour) {
+		if (flavour && flavour.amountLeft > 0) {
 			this.shoppingCart.addItem({ ...flavour });
 			flavour.amountLeft--;
 		}
@@ -56,17 +56,17 @@ export class ShopStore {
 			new Flavour({
 				name: "sunday",
 				price: 8,
-				amount: 10,
+				amount: 2,
 			}),
 			new Flavour({
 				name: "creampie",
 				price: 8,
-				amount: 10,
+				amount: 2,
 			}),
 			new Flavour({
 				name: "iceCreamBowl",
 				price: 8,
-				amount: 10,
+				amount: 2,
 			}),
 		];
 	}
