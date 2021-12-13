@@ -1,58 +1,53 @@
-import { observable, computed, action, autorun } from "mobx";
 import { Flavour, IFlavour } from "./entities/flavour";
 import { IShoppingCart, ShoppingCart } from "./entities/shoppingCart";
+import { computed, observable, runInAction } from "mobx";
+
+import delay from "./delay";
 
 export class ShopStore {
-	cart: IShoppingCart;
-	@observable private _flavours: IFlavour[] | undefined;
+	shoppingCart: IShoppingCart;
+	@observable
+	private _flavours: IFlavour[] | undefined;
+
 	constructor() {
-		this.cart = new ShoppingCart();
-		this.getFlavours();
+		this.shoppingCart = new ShoppingCart();
 	}
 
 	@computed
 	get flavours() {
+		if (!this._flavours) {
+			this.loadFlavours();
+		}
+
 		return this._flavours;
 	}
 
-	@computed
-	get enablePay() {
-		return this.cart.totalPrice > 0;
-	}
-
-	public addFlavour(flavourName: string) {
-		const flavour =
-			this._flavours && this._flavours.find((f) => f.name === flavourName);
+	public addFlavourToShoppingCart(flavourName: string) {
+		const flavour = this._flavours && this._flavours.find((f) => f.name === flavourName);
 		if (flavour) {
-			this.cart.addOrder(flavour.name, flavour.price);
+			this.shoppingCart.addItem({ ...flavour });
 			flavour.amountLeft--;
 		}
 	}
 
-	public removeFlavour(flavourName: string) {
-		const flavour =
-			this._flavours && this._flavours.find((f) => f.name === flavourName);
-		if (flavour) {
-			const existingOrderInCart = this.cart.orders.find(
-				(o) => o.item.name === flavour.name
-			);
-			if (existingOrderInCart) {
-				flavour.amountLeft++;
-			}
-			this.cart.removeOrder(flavour.name);
+	public removeFlavourFromShoppingCart(flavourName: string) {
+		const flavour = this._flavours && this._flavours.find((f) => f.name === flavourName);
+		if (flavour && this.itemExistsInShoppingCart(flavour.name)) {
+			this.shoppingCart.removeItem(flavourName);
+			flavour.amountLeft++;
 		}
 	}
 
-	public pay(paymnet: number) {
-		if (this.enablePay) {
-			this.cart.pay(paymnet);
-		}
+	private async loadFlavours(): Promise<void> {
+		const flavours = await this.fetchFlavours();
+		runInAction(() => {
+			this._flavours = flavours;
+		})
 	}
 
-	@action.bound
-	private async getFlavours(): Promise<void> {
-		await this.delay(2000);
-		this._flavours = [
+	private fetchFlavours = async (): Promise<Flavour[]> => {
+		await delay(2000);
+		return [
 			new Flavour({
 				name: "cream",
 				price: 8,
@@ -76,7 +71,8 @@ export class ShopStore {
 		];
 	}
 
-	private delay(ms: number) {
-		return new Promise((resolve) => setTimeout(resolve, ms));
+	private itemExistsInShoppingCart(itemName: string) {
+		return this.shoppingCart.orders.find((o) => o.item.name === itemName);
 	}
+
 }
