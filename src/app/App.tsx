@@ -1,11 +1,9 @@
-import { observer } from "mobx-react";
-import React from "react";
-import styled from "styled-components";
-
 import { IAppStore } from "../app";
-import { ShopStore } from "./shop/shopStore";
+import React from "react";
 import { Shop } from "./shop/Shop";
-
+import { ShopStore } from "./shop/shopStore";
+import { observer } from "mobx-react";
+import styled from "styled-components";
 
 const Body = styled.div`
 	font-family: sans-serif;

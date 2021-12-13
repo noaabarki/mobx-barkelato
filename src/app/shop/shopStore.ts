@@ -1,7 +1,8 @@
 import { Flavour, IFlavour } from "./entities/flavour";
 import { IShoppingCart, ShoppingCart } from "./entities/shoppingCart";
-import delay from "./delay";
 import { computed, observable, runInAction } from "mobx";
+
+import delay from "./delay";
 
 export class ShopStore {
 	shoppingCart: IShoppingCart;

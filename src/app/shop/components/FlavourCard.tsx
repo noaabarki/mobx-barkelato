@@ -1,8 +1,7 @@
+import { IFlavour } from "../entities";
 import React from "react";
 import { observer } from "mobx-react";
 import styled from "styled-components";
-
-import { IFlavour } from "../entities";
 
 export const FlavourCard = observer(
 	(props: {
