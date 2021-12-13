@@ -1,17 +1,18 @@
-import * as mobx from "mobx";
 import { Flavour, IFlavour } from "./entities/flavour";
 import { IShoppingCart, ShoppingCart } from "./entities/shoppingCart";
 import delay from "./delay";
+import { computed, observable, runInAction } from "mobx";
 
 export class ShopStore {
 	shoppingCart: IShoppingCart;
-	@mobx.observable private _flavours: IFlavour[] | undefined;
+	@observable
+	private _flavours: IFlavour[] | undefined;
 
 	constructor() {
 		this.shoppingCart = new ShoppingCart();
 	}
 
-	@mobx.computed
+	@computed
 	get flavours() {
 		if (!this._flavours) {
 			this.loadFlavours();
@@ -21,7 +22,7 @@ export class ShopStore {
 	}
 
 	public addFlavourToShoppingCart(flavourName: string) {
-		const flavour = this._flavours?.find((f) => f.name === flavourName);
+		const flavour = this._flavours && this._flavours.find((f) => f.name === flavourName);
 		if (flavour) {
 			this.shoppingCart.addItem({ ...flavour });
 			flavour.amountLeft--;
@@ -29,7 +30,7 @@ export class ShopStore {
 	}
 
 	public removeFlavourFromShoppingCart(flavourName: string) {
-		const flavour = this._flavours?.find((f) => f.name === flavourName);
+		const flavour = this._flavours && this._flavours.find((f) => f.name === flavourName);
 		if (flavour && this.itemExistsInShoppingCart(flavour.name)) {
 			this.shoppingCart.removeItem(flavourName);
 			flavour.amountLeft++;
@@ -38,7 +39,7 @@ export class ShopStore {
 
 	private async loadFlavours(): Promise<void> {
 		const flavours = await this.fetchFlavours();
-		mobx.runInAction(() => {
+		runInAction(() => {
 			this._flavours = flavours;
 		})
 	}
