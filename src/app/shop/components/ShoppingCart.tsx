@@ -1,8 +1,8 @@
+import { IOrder, IShoppingCart } from "../entities";
+
 import React from "react";
 import { observer } from "mobx-react";
 import styled from "styled-components";
-
-import { IOrder, IShoppingCart } from "../entities";
 
 interface IShoppingCartProps {
 	cart: IShoppingCart;
@@ -13,21 +13,27 @@ export const ShoppingCart = observer((props: IShoppingCartProps) => {
 		<ShoppingCartLayout>
 			<h3>Shopping Cart</h3>
 			<OrdersList orders={props.cart.orders} />
-			<div className="footer">
+			<ShoppingCartFooter subtotal={props.cart.subtotal} total={props.cart.total} />
+		</ShoppingCartLayout>
+	);
+});
+
+const ShoppingCartFooter = (props: {subtotal: number, total: number}) => {
+	const {subtotal, total} = props;
+	return (
+		<div className="footer">
 				<hr />
 				<p>
 					<span className="caption">Subtotal: </span>
-					<span>{props.cart.subtotal}</span>
+					<span>{subtotal}</span>
 				</p>
 				<hr />
 				<p>
 					<span className="caption">Total: </span>
-					<span>{props.cart.total}</span>
+					<span>{total}</span>
 				</p>
-			</div>
-		</ShoppingCartLayout>
-	);
-});
+			</div>)
+}
 
 const ShoppingCartLayout = styled.div`
 	border: 1px solid;
