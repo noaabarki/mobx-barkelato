@@ -18,7 +18,7 @@ export const FlavourCard = observer(
 					alt={""}
 					src={require(`../assets/images/${props.index}.jpeg`)}
 				/>
-				{/* <FlavorCardActions>
+				<FlavorCardActions>
 					<button
 						onClick={props.onAddClick}
 						disabled={props.flavour.isOutOfStock}
@@ -27,7 +27,7 @@ export const FlavourCard = observer(
 					</button>
 					<span>{props.flavour.price}$</span>
 					<button onClick={props.onRemoveClick}>-</button>
-				</FlavorCardActions> */}
+				</FlavorCardActions>
 			</FlavourCardLayout>
 		);
 	}

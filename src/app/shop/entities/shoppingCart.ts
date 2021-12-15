@@ -1,6 +1,5 @@
-import { observable, computed, action } from "mobx";
-
 import { IOrder, Order } from "./order";
+import { action, computed, observable } from "mobx";
 
 export interface IShoppingCart {
 	orders: IOrder[];
@@ -42,26 +41,26 @@ export class ShoppingCart {
 
 	@action.bound
 	public pay(paymnet: number) {
-		const isPaymentTooHigh = this.total - paymnet >= 0
-		if (isPaymentTooHigh) {
-			this.totalPaid += paymnet;
-		} else {
-			throw Error('too much money')
-		}
+		this.totalPaid += paymnet;
 	}
 
 	@computed
 	get total() {
-		const ordersTotalPrice = this.orders.reduce((accu, curr) => {
-			return accu + curr.totalPrice;
-		}, 0);
-		return ordersTotalPrice - this.totalPaid;
+		return this.ordersTotalPrice - this.totalPaid;
 	}
 
 	@computed
 	get subtotal() {
-		return this.total - this.totalPaid
+		return this.totalPaid === this.ordersTotalPrice ? 0 : this.ordersTotalPrice - this.totalPaid;
 	}
+
+	@computed
+	private get ordersTotalPrice() {
+		return this.orders.reduce((accu, curr) => {
+			return accu + curr.totalPrice;
+		}, 0);
+	}
+
 
 	private getNextOrderId = () => {
 		return this.orders.length + 1;

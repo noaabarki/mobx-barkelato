@@ -1,11 +1,10 @@
+import { FlavourCard } from "./components/FlavourCard";
+import { IFlavour } from "./entities";
 import React from "react";
+import { ShopStore } from "./shopStore";
+import { ShoppingCart } from "./components/ShoppingCart";
 import { observer } from "mobx-react";
 import styled from "styled-components";
-
-import { ShopStore } from "./shopStore";
-import { IFlavour } from "./entities";
-import { FlavourCard } from "./components/FlavourCard";
-import { ShoppingCart } from "./components/ShoppingCart";
 
 export const Shop = observer((props: { store: ShopStore }) => {
 	return (

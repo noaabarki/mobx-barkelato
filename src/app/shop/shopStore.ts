@@ -24,9 +24,13 @@ export class ShopStore {
 
 	public addFlavourToShoppingCart(flavourName: string) {
 		const flavour = this._flavours && this._flavours.find((f) => f.name === flavourName);
-		if (flavour && flavour.amountLeft > 0) {
-			this.shoppingCart.addItem({ ...flavour });
-			flavour.amountLeft--;
+		if (flavour) {
+			if(flavour.amountLeft > 0) {
+				this.shoppingCart.addItem({ ...flavour });
+				flavour.amountLeft--;
+			} else {
+				throw new Error("Flavour is out of stock");
+			}	
 		}
 	}
 
