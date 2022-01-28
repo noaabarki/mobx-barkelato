@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: mobx-barkellato-app
-  namespace: argocd
+  namespace: argocd-other
 spec:
   project: default
   source:
