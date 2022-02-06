@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: download-custom-tools
+          image: datree/datree:latest
+          command: [sh, -c]
+          args:
+            - cp /usr/bin/datree /custom-tools/datree
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools
+      containers:
+        - name: argocd-repo-server
+          volumeMounts:
+            - mountPath: /usr/local/bin/datree
+              name: custom-tools
+              subPath: datree
+      volumes:
+        - name: custom-tools
+          emptyDir: {}
