@@ -2,24 +2,38 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: argocd-repo-server
+  namespace: argocd
+  labels:
+    app: argocd-repo-server
 spec:
   template:
     spec:
       initContainers:
         - name: download-custom-tools
-          image: datree/datree:latest
+          image: alpine:3.8
           command: [sh, -c]
           args:
-            - cp /usr/bin/datree /custom-tools/datree
+            # copy datree to our volume so that it can later be mounted by the repo server
+            - >-
+              wget -O datree.zip https://github.com/datreeio/datree/releases/download/0.15.5/datree-cli_0.15.5_Linux_x86_64.zip && 
+              unzip datree.zip &&
+              chmod +x ./datree && mv ./datree /custom-tools/datree
           volumeMounts:
-            - mountPath: /custom-tools
-              name: custom-tools
+            - name: custom-tools
+              mountPath: /custom-tools
       containers:
         - name: argocd-repo-server
-          volumeMounts:
-            - mountPath: /usr/local/bin/datree
-              name: custom-tools
+          securityContext:
+            runAsNonRoot: false
+          volumeMounts: # this tells the container where to mount the volume that contains our datree binary
+            - name: custom-tools
+              mountPath: /usr/local/bin/datree
               subPath: datree
       volumes:
         - name: custom-tools
           emptyDir: {}
+#
+#
+# mountPath shows where the referenced volume should be mounted in the container.
+# For instance, if you mount a volume to mountPath: /a/b/c, the volume will be available
+# to the container under the directory /a/b/c.
