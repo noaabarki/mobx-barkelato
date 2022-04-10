@@ -11,13 +11,12 @@ metadata:
     app: mobx-barkellato-ingress
 spec:
   rules:
-    # - host: hn.datree.io
     - http:
         paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: service-mobx-barkellato
-              port:
-                number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service-mobx-barkellato
+                port:
+                  number: 80
