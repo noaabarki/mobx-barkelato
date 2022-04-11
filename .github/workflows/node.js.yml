@@ -24,4 +24,4 @@ jobs:
       - run: npm run-script build
       - run: |
           curl https://get.datree.io | /bin/bash
-          datree test ./kube/**
+          datree test ./manifests/kube/*.yaml

@@ -23,7 +23,7 @@ metadata:
     app.kubernetes.io/part-of: mobx-barkellato-app
     app.kubernetes.io/managed-by: Noaa
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: mobx-barkellato
@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: mobx-barkellato
-          image: noaabarki/mobx-barkellato:v.0.0.1.test
+          image: noaabarki/mobx-barkellato:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -80,5 +80,3 @@ spec:
       targetPort: 80
       protocol: TCP
       nodePort: 31000
-  selector:
-    app: "mobx-barkellato"
