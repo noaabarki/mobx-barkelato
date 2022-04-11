@@ -7,6 +7,7 @@ metadata:
   annotations:
     workflows.argoproj.io/description: "This is a simple hello world example."
 spec:
+  serviceAccountName: argo
   entrypoint: whalesay
   templates:
     - name: whalesay
