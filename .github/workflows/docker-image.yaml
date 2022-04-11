@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag mobx-barkellato:$(date +%s)
+        run: docker build . --tag mobx-barkellato:$(date +%s)
       - name: Create a new tag
         run: docker tag mobx-barkellato:$(date +%s) noaabarki/mobx-barkellato:$(date +%s)
       - name: Push the image to Docker Hub
