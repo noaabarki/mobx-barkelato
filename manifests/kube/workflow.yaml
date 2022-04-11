@@ -1,49 +1,46 @@
-# apiVersion: argoproj.io/v1alpha1
-# kind: Workflow # new type of k8s spec
-# metadata:
-#   name: my-workflow
-#   generateName: hello-world- # name of the workflow spec
-# spec:
-#   serviceAccountName: argo
-#   entrypoint: everything # invoke the whalesay template
-#   templates:
-#     - name: everything
-#       retryStrategy:
-#         limit: 0
-#         retryPolicy: "Always"
-#       steps:
-#         - - name: # name of the template
-#             container:
-#               image: docker/whalesay
-#               command: [cowsay]
-#               args: ["hello world"]
-#               resources: # limit the resources
-#                 limits:
-#                   memory: 32Mi
-#                   cpu: 100m
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow # new type of k8s spec
+metadata:
+  name: hello-world-workflow
+spec:
+  entrypoint: everything # invoke the whalesay template
+  templates:
+    - name: everything
+      retryStrategy:
+        limit: 3
+      steps:
+        - - name: # name of the template
+            container:
+              image: docker/whalesay
+              command: [cowsay]
+              args: ["hello world"]
+              resources: # limit the resources
+                limits:
+                  memory: 32Mi
+                  cpu: 100m
 
-#         - - name: generate
-#             template: gen-random-int-bash
+        - - name: generate
+            template: gen-random-int-bash
 
-#         - - name: print
-#             template: print-output
-#             arguments:
-#               parameters:
-#                 - name: message
-#                   value: "{{steps.generate.outputs.result}}" # The result of the here-script
+        - - name: print
+            template: print-output
+            arguments:
+              parameters:
+                - name: message
+                  value: "{{steps.generate.outputs.result}}" # The result of the here-script
 
-#     - name: gen-random-int-bash
-#       script:
-#         image: debian:9.4
-#         command: [bash]
-#         source: | # Contents of the here-script
-#           cat /dev/urandom | od -N2 -An -i | awk -v f=1 -v r=100 '{printf "%i\n", f + r * $1 / 65536}'
+    - name: gen-random-int-bash
+      script:
+        image: debian:9.4
+        command: [bash]
+        source: | # Contents of the here-script
+          cat /dev/urandom | od -N2 -An -i | awk -v f=1 -v r=100 '{printf "%i\n", f + r * $1 / 65536}'
 
-#     - name: print-output
-#       inputs:
-#         parameters:
-#           - name: message
-#       container:
-#         image: alpine:latest
-#         command: [sh, -c]
-#         args: ["echo result was: {{inputs.parameters.message}}"]
+    - name: print-output
+      inputs:
+        parameters:
+          - name: message
+      container:
+        image: alpine:latest
+        command: [sh, -c]
+        args: ["echo result was: {{inputs.parameters.message}}"]

@@ -1,0 +1,20 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag mobx-barkellato:$(date +%s)
+      - name: Create a new tag
+        run: docker tag mobx-barkellato:$(date +%s) noaabarki/mobx-barkellato:$(date +%s)
+      - name: Push the image to Docker Hub
+        run: docker push noaabarki/mobx-barkellato:$(date +%s)
