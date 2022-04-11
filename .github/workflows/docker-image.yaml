@@ -1,5 +1,8 @@
 name: Docker Image CI
 
+env:
+  DOCKER_TAG: ""
+
 on:
   push:
     branches: [main]
@@ -10,11 +13,35 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # COMMIT_HASH=$(git rev-parse HEAD)
+    # DOCKER_TAG="${TRAVIS_BRANCH}-${COMMIT_HASH}"
+
     steps:
       - uses: actions/checkout@v3
-      - name: Build the Docker image
-        run: docker build . --tag mobx-barkellato:$(date +%s)
+
+      - name: Get Branch
+        id: branch
+        run: echo "git_branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_BRANCH
+
+      - name: Check Branch
+        run: echo "${{ env.branch }}"
+
+      - name: Get Hash
+        id: hash
+        run: echo "git_hash=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_HASH
+
+      - name: Check Hash
+        run: echo "${{ env.hash }}"
+
+      - name: Get Tag
+        id: tag
+        run: echo "docker_tag=${{ env.DOCKER_TAG }}" >> $DOCKER_TAG
+
+      - name: Build the new Docker image
+        run: docker build . --tag mobx-barkellato:${{ env.DOCKER_TAG }}
+
       - name: Create a new tag
-        run: docker tag mobx-barkellato:$(date +%s) noaabarki/mobx-barkellato:$(date +%s)
+        run: docker tag mobx-barkellato:${{ env.DOCKER_TAG }} noaabarki/mobx-barkellato:${{ env.DOCKER_TAG }}
+
       - name: Push the image to Docker Hub
-        run: docker push noaabarki/mobx-barkellato:$(date +%s)
+        run: docker push noaabarki/mobx-barkellato:${{ env.DOCKER_TAG }}
