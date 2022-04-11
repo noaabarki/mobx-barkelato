@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: "git@github.com:noaabarki/mobx-barelato.git"
+    repoURL: "https://github.com/noaabarki/mobx-barelato.git"
     targetRevision: HEAD
     path: kube/*.yaml
   destination:
