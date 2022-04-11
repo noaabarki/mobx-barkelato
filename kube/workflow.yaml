@@ -4,6 +4,7 @@ metadata:
   name: my-workflow
   generateName: hello-world- # name of the workflow spec
 spec:
+  serviceAccountName: argo
   entrypoint: everything # invoke the whalesay template
   templates:
     - name: everything
@@ -11,7 +12,7 @@ spec:
         limit: 0
         retryPolicy: "Always"
       steps:
-        - - name:   # name of the template
+        - - name: # name of the template
             container:
               image: docker/whalesay
               command: [cowsay]
