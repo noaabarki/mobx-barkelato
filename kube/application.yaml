@@ -3,12 +3,6 @@ kind: Application
 metadata:
   name: mobx-barkellato-app
   namespace: argocd
-  labels:
-    work:
-    valueFrom:
-      configMapKeyRef:
-        name: test-cm
-        key: eks1dot22plus
 spec:
   project: default
   source:
