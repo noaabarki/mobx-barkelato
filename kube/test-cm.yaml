@@ -4,6 +4,6 @@ data:
   eks1dot22plus: "true"
 metadata:
   name: test-cm
-  namespace: services
+  namespace: argocd
   # labels:
   # app.kubernetes.io/part-of: argocd
