@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  eks1dot22plus: "true"
+metadata:
+  name: test-cm
+  namespace: services
+  # labels:
+  # app.kubernetes.io/part-of: argocd
