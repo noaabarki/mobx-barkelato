@@ -5,5 +5,5 @@ data:
 metadata:
   name: test-cm
   namespace: argocd
-  # labels:
-  # app.kubernetes.io/part-of: argocd
+  labels:
+    app.kubernetes.io/part-of: argocd
