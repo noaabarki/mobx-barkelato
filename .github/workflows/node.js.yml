@@ -23,6 +23,3 @@ jobs:
       - run: npm ci
       - run: npm run-script build
       - run: npm test
-      - run: |
-          curl https://get.datree.io | /bin/bash
-          datree test kube/*.yaml
