@@ -1,17 +1,17 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: mobx-barkellato
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: "https://github.com/noaabarki/mobx-barelato.git"
-    targetRevision: HEAD
-    path: kube
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: mobx-barkellato-app
-  syncPolicy:
-    automated:
-      selfHeal: true
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: mobx-barkellato
+#   namespace: argocd
+# spec:
+#   project: default
+#   source:
+#     repoURL: "https://github.com/noaabarki/mobx-barelato.git"
+#     targetRevision: HEAD
+#     path: kube
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: mobx-barkellato-app
+#   syncPolicy:
+#     automated:
+#       selfHeal: true
