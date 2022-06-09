@@ -14,6 +14,7 @@ export const App = observer(({ store }: { store: IAppStore }) => {
 	const shopViewModel = new ShopStore();
 	return (
 		<Body>
+			<h1>Argo</h1>
 			<Shop store={shopViewModel} />
 		</Body>
 	);
