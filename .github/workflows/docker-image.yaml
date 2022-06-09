@@ -19,7 +19,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build the Docker image
-        run: docker build -t mobx-barkellato .
+        run: docker build -t noaabarki/mobx-barkellato .
 
       - name: Push the Docker imgae to registry
         run: docker push noaabarki/mobx-barkellato
