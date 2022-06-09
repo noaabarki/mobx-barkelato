@@ -1,3 +1,5 @@
+name: Run Datree
+
 on:
   push:
     branches: [main]

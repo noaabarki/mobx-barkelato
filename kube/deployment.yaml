@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: mobx-barkellato
-          image: noaabarki/mobx-barkellato:v1.0.0
+          image: noaabarki/mobx-barkellato:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
