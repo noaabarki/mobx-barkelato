@@ -26,7 +26,7 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: mobx-barkellato
+      app: mobx-barkellatohh
   template:
     metadata:
       labels:
