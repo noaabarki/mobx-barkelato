@@ -3,8 +3,6 @@ name: Docker Image CI
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: [main]
 
 jobs:
   build:
@@ -19,6 +17,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Run react-app build
+        run: npm run-script build
 
       - name: Build the Docker image
         run: docker build -t noaabarki/mobx-barkellato .
