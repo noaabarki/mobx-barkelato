@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: mobx-barkellato
-          image: noaabarki/mobx-barkellato:sha256:c36642de008117859beba423cb4c1819c638881e9583ec94a31df6c0c34e8f2e
+          image: noaabarki/mobx-barkellato@sha256:c36642de008117859beba423cb4c1819c638881e9583ec94a31df6c0c34e8f2e
           imagePullPolicy: Always
           ports:
             - containerPort: 80
