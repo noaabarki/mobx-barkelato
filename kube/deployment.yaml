@@ -23,7 +23,7 @@ metadata:
     app.kubernetes.io/part-of: mobx-barkellato-app
     app.kubernetes.io/managed-by: Noaa
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: mobx-barkellato
